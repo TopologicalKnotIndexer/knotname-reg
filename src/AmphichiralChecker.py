@@ -34,7 +34,7 @@ class AmphichiralChecker:
             return False # 对于较大扭结拒绝判断，直接假设他是手性的
 
     def is_prime_knot_name_format(self, knotname: str) -> bool: # 检查标准素扭结的名称格式
-        return re.match("^(m|)k\d+(a|n)\d+$", knotname.lower()) is not None
+        return re.match(r"^(m|)k\d+(a|n)\d+$", knotname.lower()) is not None
 
     def simplify_prime_name(self, prime_name: str):
         assert self.is_prime_knot_name_format(prime_name)
