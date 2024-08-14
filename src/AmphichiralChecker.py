@@ -9,6 +9,7 @@ class AmphichiralChecker:
         self.data_dir              = os.path.join(self.dir_now, "data")
         self.name_pair_file        = os.path.join(self.data_dir, "name_pair.txt")
         self.amphichiral_list_file = os.path.join(self.data_dir, "amphichiral_list.txt")
+        self.need_mirror_file      = os.path.join(self.data_dir, "need_mirror.txt")
         self.amphichiral_list      = []
         self.load_name_pair_file()
         self.load_amphichiral_list_file()
@@ -60,10 +61,37 @@ class AmphichiralChecker:
         for knot_name in knot_name_list:
             arr.append(self.simplify_knot_name(knot_name))
         return sorted(list(set(arr)))
+    
+    def get_mirror_for_prime(self, knot_name: str) -> str: # toggle "m"
+        if knot_name[0] == "m":
+            return knot_name[1:]
+        else:
+            return "m" + knot_name
+
+    def regularfy_prime_name(self, knot_name: str) -> str:
+        assert self.is_prime_knot_name_format(knot_name)
+        writhe_wrong_list = [x.strip() for x in list(open(self.need_mirror_file))]
+        base_name = knot_name.split("m")[-1]                 # 删除前导 m
+        if base_name.replace("k", "K") in writhe_wrong_list: # 进行 writhe 修正
+            return self.get_mirror_for_prime(knot_name)
+        else:
+            return knot_name
+
+    def regularfy_knot_name(self, knot_name: str) -> str: # 根据 writhe 对扭结名称进行修正，请注意不要矫枉过正
+        assert isinstance(knot_name, str)
+        if knot_name.find(',') == -1:
+            return self.regularfy_prime_name(knot_name) # 本身就是素扭结
+        arr = []
+        for prime_name in knot_name.split(','): # 本身不是素扭结
+            arr.append(self.regularfy_prime_name(prime_name.strip()))
+        return ",".join(sorted(arr))
 
 def knotname_reg(knot_name: str) -> str: # 对扭结名称进行正则化，考虑非手性扭结的命名重复
     amp_checker = AmphichiralChecker()
-    return amp_checker.simplify_knot_name(knot_name).replace("k", "K")
+    reg_name    = amp_checker.regularfy_knot_name(knot_name) # writhe 修正
+    sim_name    = amp_checker.simplify_knot_name (reg_name)  # 手性约简
+    return sim_name.replace("k", "K") 
 
 if __name__ == "__main__": # 测试
     print(knotname_reg("mk6a3,mk4a1"))
+    print(knotname_reg("k7a7"))
