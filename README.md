@@ -1,17 +1,50 @@
 # knotname-reg
-用于对非手性扭结的扭结名称进行正则化。
 
+Normalize prime and composite knot names, including mirror conventions,
+amphichiral knots, and the writhe corrections used by this organization.
 
+## Supported names
 
-## 前置条件
+Prime names use the form `[m]K<c>a<i>` or `[m]K<c>n<i>`, for example `K7a7`
+or `mK8n2`. Input is case-insensitive and output uses canonical casing.
+Composite knots are comma-separated prime names; their components are sorted
+without removing multiplicity.
 
-- `python3`
+## Command-line usage
 
+```bash
+echo "mk6a3,mk4a1" | python src/main.py
+```
 
+Output:
 
-## 使用方式
+```text
+K4a1,K6a3
+```
 
-- `python3 ./src/main.py`
-  - 向程序的标准输入流输入一个扭结名称
-  - 程序会将正则化后的扭结名称输出到标准输出
+## Python API
+
+```python
+from src.AmphichiralChecker import knotname_reg
+
+assert knotname_reg("K7A7") == "mK7a7"
+```
+
+## Algorithm and data
+
+`src/data/need_mirror.txt` records names whose organization-wide convention
+requires toggling the mirror prefix. `name_pair.txt` maps canonical names to
+tabulation names, and `amphichiral_list.txt` identifies knots for which the
+mirror prefix is redundant. Data files are loaded once per checker instance.
+
+Invalid or empty names raise `ValueError`; non-string values raise `TypeError`.
+The normalizer does not silently accept malformed names.
+
+## Development
+
+Python 3.10 or newer and the standard library are sufficient. Run:
+
+```bash
+python -m unittest discover -s tests -v
+```
 
