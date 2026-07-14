@@ -48,3 +48,16 @@ Python 3.10 or newer and the standard library are sufficient. Run:
 python -m unittest discover -s tests -v
 ```
 
+## Citation
+
+If you use this repository in academic work, please cite it as:
+
+```bibtex
+@software{topologicalknotindexer_knotname_reg,
+  author = {{TopologicalKnotIndexer contributors}},
+  title = {{knotname-reg}},
+  year = {2026},
+  url = {https://github.com/TopologicalKnotIndexer/knotname-reg}
+}
+```
+
